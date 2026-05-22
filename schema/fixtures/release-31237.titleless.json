@@ -1,0 +1,12 @@
+{
+  "_comment": "A kind:31237 release event carrying ONLY the `d` tag — no title, no artist, no optional tags. release.v1 guarantees only `d`; ndisc's push_tag omits any empty-valued tag, title/artist included. parseRelease must accept this event (gate on `d` alone) and fall back title/artist to 'Untitled'/'Unknown Artist' for display. id/pubkey/created_at/sig are illustrative.",
+  "kind": 31237,
+  "content": "",
+  "tags": [
+    ["d", "disco-vault:7"]
+  ],
+  "id": "<illustrative — 64-hex event id>",
+  "pubkey": "<illustrative — 64-hex author pubkey>",
+  "created_at": 1747900000,
+  "sig": "<illustrative — 128-hex signature>"
+}

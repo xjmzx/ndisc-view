@@ -150,17 +150,17 @@ export function formatGroup(raw: string | undefined): string | undefined {
 
 export function parseRelease(event: NostrEvent): Release | null {
   const d = getTag(event, "d");
-  const title = getTag(event, "title");
-  const artist = getTag(event, "artist");
-  // `medium` is optional per release.v1 — never gate parsing on it.
-  if (!d || !title || !artist) return null;
+  // Only `d` is structurally guaranteed by release.v1 — every other tag,
+  // title/artist included, is omitted when its value is empty. Conform to
+  // the wire: gate on `d` alone, fall back for display.
+  if (!d) return null;
   return {
     id: event.id,
     pubkey: event.pubkey,
     createdAt: event.created_at,
     d,
-    title,
-    artist,
+    title: getTag(event, "title") || "Untitled",
+    artist: getTag(event, "artist") || "Unknown Artist",
     medium: getTag(event, "medium"),
     format: getTag(event, "format"),
     formatGroup: formatGroup(getTag(event, "format")),
