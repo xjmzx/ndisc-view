@@ -74,7 +74,7 @@ export function ReleaseDetail({ release, onRequireLogin }: Props) {
       <CoverArt
         src={release.image}
         alt={release.title}
-        className="w-full aspect-square rounded-xl mb-4"
+        className="w-full max-w-[16rem] aspect-square rounded-xl mb-4 mx-auto"
       />
 
       <div className="flex items-start justify-between gap-3">
