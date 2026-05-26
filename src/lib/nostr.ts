@@ -189,6 +189,49 @@ export function parseProfile(event: NostrEvent): Profile {
   }
 }
 
+// ---- labels.v1 (kind:31238) ---------------------------------------------
+//
+// Owner-published record-label image library: a single addressable event per
+// owner (d-tag `disco-vault:labels`) carrying a JSON map of label name →
+// image URL. Wire schema vendored at `schema/labels.v1.json`. Mirror of
+// glmps's parser + hook; ndisc.view is the third consumer of this contract.
+
+/** Entry in the owner's record-label image library (labels.v1). */
+export type LabelLibraryEntry = {
+  image: string;
+};
+
+export type LabelLibrary = {
+  schemaVersion: "labels.v1";
+  labels: Record<string, LabelLibraryEntry>;
+};
+
+/**
+ * Parse a kind:31238 event into a [`LabelLibrary`]. Tolerates extra fields
+ * inside each entry (forward-compat per the labels.v1 contract). Returns
+ * `null` if the event isn't a valid labels.v1 manifest.
+ */
+export function parseLabelLibrary(event: NostrEvent): LabelLibrary | null {
+  try {
+    const parsed = JSON.parse(event.content);
+    if (parsed?.schemaVersion !== "labels.v1") return null;
+    if (!parsed.labels || typeof parsed.labels !== "object") return null;
+    const labels: Record<string, LabelLibraryEntry> = {};
+    for (const [name, entry] of Object.entries(parsed.labels)) {
+      if (
+        entry &&
+        typeof entry === "object" &&
+        typeof (entry as { image?: unknown }).image === "string"
+      ) {
+        labels[name] = { image: (entry as { image: string }).image };
+      }
+    }
+    return { schemaVersion: "labels.v1", labels };
+  } catch {
+    return null;
+  }
+}
+
 /**
  * NIP-01 replaceable winner rule: higher created_at wins; tie-break to lower
  * lexicographic event id. Returns true iff `next` should replace `current`.

@@ -11,3 +11,10 @@ export const DEFAULT_RELAYS = [
 ] as const;
 
 export const RELEASE_KIND = 31237;
+
+// Record-label image library — single addressable event per owner with
+// fixed d-tag `disco-vault:labels`. Wire schema vendored at
+// `schema/labels.v1.json`, canonical in xjmzx/ndisc. Consumer-side parser
+// + dedicated `useLabelLibrary` hook.
+export const LABEL_LIBRARY_KIND = 31238;
+export const LABEL_LIBRARY_D = "disco-vault:labels";

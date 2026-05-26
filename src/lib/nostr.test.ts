@@ -1,7 +1,7 @@
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import type { Event as NostrEvent } from "nostr-tools";
-import { parseRelease } from "./nostr";
+import { parseLabelLibrary, parseRelease } from "./nostr";
 
 // Parse-conformance test — pins parseRelease to the frozen release.v1
 // contract (schema/release.v1.json, canonical in xjmzx/ndisc). A failure
@@ -49,5 +49,56 @@ describe("parseRelease — release.v1 conformance", () => {
       ],
     } as unknown as NostrEvent;
     expect(parseRelease(noD)).toBeNull();
+  });
+});
+
+describe("parseLabelLibrary — labels.v1 conformance", () => {
+  it("parses a valid labels.v1 manifest", () => {
+    const ev = fixture("labels-31238.full.json");
+    const lib = parseLabelLibrary(ev);
+    expect(lib).not.toBeNull();
+    expect(lib!.schemaVersion).toBe("labels.v1");
+    expect(Object.keys(lib!.labels).sort()).toEqual([
+      "Móatún 7",
+      "Planet Mu",
+      "Skam Records",
+    ]);
+    expect(lib!.labels["Planet Mu"].image).toBe(
+      "https://i.nostr.build/bV9Z0xnHFrTVHBaB.png",
+    );
+  });
+
+  it("rejects a manifest with the wrong schemaVersion", () => {
+    const ev = {
+      content: JSON.stringify({
+        schemaVersion: "labels.v2",
+        labels: { "x": { image: "https://example/x.jpg" } },
+      }),
+    } as unknown as NostrEvent;
+    expect(parseLabelLibrary(ev)).toBeNull();
+  });
+
+  it("rejects a manifest with no labels object", () => {
+    const ev = {
+      content: JSON.stringify({ schemaVersion: "labels.v1" }),
+    } as unknown as NostrEvent;
+    expect(parseLabelLibrary(ev)).toBeNull();
+  });
+
+  it("drops entries with a non-string image — forward-compat for extra fields", () => {
+    const ev = {
+      content: JSON.stringify({
+        schemaVersion: "labels.v1",
+        labels: {
+          good: { image: "https://example/good.jpg", country: "GB" },
+          bad: { image: 42 },
+          empty: {},
+        },
+      }),
+    } as unknown as NostrEvent;
+    const lib = parseLabelLibrary(ev);
+    expect(lib).not.toBeNull();
+    expect(Object.keys(lib!.labels)).toEqual(["good"]);
+    expect(lib!.labels.good.image).toBe("https://example/good.jpg");
   });
 });

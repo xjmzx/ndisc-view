@@ -1,0 +1,12 @@
+{
+  "id": "0000000000000000000000000000000000000000000000000000000000000001",
+  "pubkey": "0000000000000000000000000000000000000000000000000000000000000000",
+  "created_at": 1700000000,
+  "kind": 31238,
+  "tags": [
+    ["d", "disco-vault:labels"],
+    ["alt", "ndisc record-label image library"]
+  ],
+  "content": "{\"schemaVersion\":\"labels.v1\",\"labels\":{\"Planet Mu\":{\"image\":\"https://i.nostr.build/bV9Z0xnHFrTVHBaB.png\"},\"Skam Records\":{\"image\":\"https://i.nostr.build/5ZoSqjEVkjEU3ohZ.jpg\"},\"Móatún 7\":{\"image\":\"https://i.nostr.build/gzuTyt3M7rl8Wyk0.jpg\"}}}",
+  "sig": "00"
+}
